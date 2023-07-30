@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import streamlit_survey as ss
 from datetime import datetime
-import joblib
 from streamlit_extras.switch_page_button import switch_page
 
 st.set_page_config(
