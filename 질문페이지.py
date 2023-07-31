@@ -4,6 +4,10 @@ import streamlit_survey as ss
 from datetime import datetime
 from streamlit_extras.switch_page_button import switch_page
 
+
+
+
+
 st.set_page_config(
     page_title="Survey",
     page_icon="✅",
@@ -67,7 +71,7 @@ flight_mapping = {'직항': 0, '1회경유': 1, '그외': 2}
 
 #Hotel
 ######################################
-hotel = pd.read_csv("data2/hotel_total_final.csv",encoding='CP949')
+hotel = pd.read_csv("data2/hotel_total_final.csv")
 # 지역명을 숫자로 매핑하는 딕셔너리
 category_mapping = {'게스트하우스,캡슐호텔,호스텔':0, '리조트,펜션,료칸':1, '호텔':2}
 hotel_grade_mapping ={'1성급':1,'2성급':2,'3성급':3,'4성급':4,'5성급':5,}
@@ -111,31 +115,24 @@ brand_mapping = {'닛산': 0,'다이하쓰': 1,'도요타': 2,'마쯔다': 3,'�
 
 
 
-
 with st.expander(" ", expanded=True):
     survey = ss.StreamlitSurvey("Survey Example")
-    pages = survey.pages(14, on_submit=lambda: switch_page("분석페이지") )
+    pages = survey.pages(15, on_submit=lambda: switch_page("분석페이지") )
     with pages:
+
       
 # 1. 몇 명이서 여행을 가시나요? 
         if pages.current == 0:
-            st.markdown("#### 1. 몇 명이서 여행을 가시나요?")
+            st.markdown(f"#### 1. 몇 명이서 여행을 가시나요? ")
             user_count = survey.number_input( '동행 인원 수', min_value=1, max_value=10)
             st.session_state['user_count'] = user_count
             
-            col1, col2 = st.columns([0.5,0.5])
-            with col1:
-              adult = st.number_input("성인", min_value=0, max_value=30, value=0)
-            with col2:
-              kid = st.number_input("유아", min_value=0, max_value=30, value=0)
-            st.session_state['adult'] = adult
-            st.session_state['kid'] = kid
 
 
 # 2. 누구와 함께 가시나요?(객관식)
 # ⇒ 1) 가족 2) 연인 3) 친구 등
             if user_count >= 2:
-                st.markdown("#### 2. 누구와 함께 가시나요?")
+                st.markdown(f"#### 2. 누구와 함께 가시나요? ")
                 user_with =survey.radio(
                    'user_with',  options=["가족", "연인", "친구"], index=0, label_visibility="collapsed", horizontal=True
                 )
@@ -148,14 +145,14 @@ with st.expander(" ", expanded=True):
 # 3. 여행 기간은 어떻게 되시나요?(~9월까지 제공)
 # ⇒ 달력으로 표시(직접 선택) == 출발, 도착일 정해짐 + 일수계산 필요
         if pages.current == 1:
-                st.markdown("#### 3. 여행 기간은 어떻게 되시나요?")
+                st.markdown(f"#### 3. 여행 기간은 어떻게 되시나요? ")
                 air_st = survey.dateinput('출국날짜')
                 air_end = survey.dateinput('입국날짜')
 
                 air_days = None  # Initialize air_days to None
 
                 if air_st == air_end:
-                    st.markdown("##### 날짜를 선택해주세요")
+                    st.markdown(f"##### 날짜를 선택해주세요 ")
                 else:
                     air_st_date = datetime.strptime(str(air_st)[0:10], '%Y-%m-%d').date()
                     air_end_date = datetime.strptime(str(air_end)[0:10], '%Y-%m-%d').date()
@@ -180,7 +177,7 @@ with st.expander(" ", expanded=True):
 # 4. 일본 어디로 가시나요?
 # ⇒ 1) 도쿄 2) 오사카 3) 삿포로 4) 오키나와 5) 후쿠오카
         if pages.current == 2:
-            st.markdown("#### 5. 일본 어디로 가시나요?")
+            st.markdown(f"#### 4. 일본 어디로 가시나요? ")
             det =survey.radio(
               'det',   options=list(city_to_airport_code_jp.keys()), index=0, label_visibility="collapsed"
             )
@@ -194,7 +191,7 @@ with st.expander(" ", expanded=True):
 # 6. 어디에서 출발하시나요?
 #  1) 인천공항 2) 청주공항 3) 광주공항 4) 대구공항 5)김해공항
         if pages.current == 3:
-            st.markdown("#### 6. 어디 공항에서 출발하시나요?")
+            st.markdown(f"#### 5. 어디 공항에서 출발하시나요? ")
             arr =survey.radio(
               'arr',    options=list(city_to_airport_code_kr.keys()), index=0, label_visibility="collapsed", horizontal=True
             )
@@ -206,7 +203,7 @@ with st.expander(" ", expanded=True):
 # 7. 항공편에 선호하는 좌석 등급이 있나요?(상관없음을 빼고 복수선택 가능을 해도 괜찮을 듯)
 # ⇒ 1) 상관 없음 2) 이코노미 3)프리미엄 이코노미 4) 비즈니스 5)퍼스트
         if pages.current == 4:
-            st.markdown("#### 7. 항공편에 선호하는 좌석 등급이 있나요?")
+            st.markdown(f"#### 6. 항공편에 선호하는 좌석 등급이 있나요? ")
             filtered_air = air[(air['Arr'] == str(st.session_state.get('arr_i'))) & (air['Det'] == str(st.session_state.get('det_i')))]
             air_cls =survey.radio(
               'air_cls',  options=filtered_air['grade'].drop_duplicates().tolist(), index=0, label_visibility="collapsed", horizontal=True
@@ -217,7 +214,7 @@ with st.expander(" ", expanded=True):
 
 # 8. 경유를 해도 괜찮나요?
         if pages.current == 5:
-            st.markdown("#### 8. 경유를 해도 괜찮나요?")
+            st.markdown(f"#### 7. 경유를 해도 괜찮나요? ")
             filtered_air = air[(air['Arr'] == str(st.session_state.get('arr_i'))) & (air['Det'] == str(st.session_state.get('det_i'))) & 
                              (air['grade'] == str(st.session_state.get('air_cls'))) ]
             if len(filtered_air)==0:
@@ -234,23 +231,24 @@ with st.expander(" ", expanded=True):
 
 
         if pages.current == 6:
-            col2, col3, col4, col5 = st.columns([0.4,0.2,0.2,0.2])
-            with col2:
-              st.write('일본행 항공권 시간을 선택해주세요')
-              st.write(' ')
-              st.write(' ')
-              st.write(' ')
-              st.write('한국행 항공권 시간을 선택해주세요')
-            with col3:
-              arrival_hour = st.number_input("일본행 (시)", min_value=0, max_value=23, value=0)
-              depart_hour = st.number_input("한국행 (시)", min_value=0, max_value=23, value=0)
-            with col4:
-              arrival_minute = st.number_input("일본행 (분)", min_value=0, max_value=59, value=0)
-              depart_minute = st.number_input("한국행 (분)", min_value=0, max_value=59, value=0)
-            st.session_state['depart_hour'] = depart_hour
-            st.session_state['arrival_hour'] = arrival_hour
-            st.session_state['depart_minute'] = depart_minute
-            st.session_state['arrival_minute'] = arrival_minute
+          st.markdown(f"#### 8. 항공권 시간을 선택해주세요 ")
+          col2, col3, col4, col5 = st.columns([0.4,0.2,0.2,0.2])
+          with col2:
+            st.write('일본행 항공권 시간을 선택해주세요')
+            st.write(' ')
+            st.write(' ')
+            st.write(' ')
+            st.write('한국행 항공권 시간을 선택해주세요')
+          with col3:
+            arrival_hour = st.number_input("일본행 (시)", min_value=0, max_value=23, value=0)
+            depart_hour = st.number_input("한국행 (시)", min_value=0, max_value=23, value=0)
+          with col4:
+            arrival_minute = st.number_input("일본행 (분)", min_value=0, max_value=59, value=0)
+            depart_minute = st.number_input("한국행 (분)", min_value=0, max_value=59, value=0)
+          st.session_state['depart_hour'] = depart_hour
+          st.session_state['arrival_hour'] = arrival_hour
+          st.session_state['depart_minute'] = depart_minute
+          st.session_state['arrival_minute'] = arrival_minute
             
 
  
@@ -260,28 +258,28 @@ with st.expander(" ", expanded=True):
 
 
         if pages.current == 7:
-           st.write('다음은 숙소 예약에 대한 질문 입니다.')
+           st.write('#### 다음은 숙박에 대한 질문 입니다.')
           
         if pages.current == 8:
-            st.markdown("#### 11. 어떤 숙박 유형을 찾을까요?")
+            st.markdown(f"#### 9. 어떤 숙박 유형을 찾을까요? ")
             hot_category=survey.radio('hot_category',
                         options=list(category_mapping.keys()), index=0, label_visibility="collapsed", horizontal=True
                      )
             st.session_state['hot_category'] = hot_category
         
         if pages.current == 9:
-            st.markdown("#### 12. 숙소의 평점을 선택해주세요")
-            st.markdown("##### 8점 이상을 추천드립니다.")
-            hotel_score = survey.slider("평점 0.0 ~ 10.0", min_value=1, max_value=10)
+            st.markdown(f"#### 10. 숙소의 평점을 선택해주세요 ")
+            st.markdown(f"##### 8점 이상을 추천드립니다.")
+            hotel_score = survey.slider("평점 0.0 ~ 10.0", min_value=1, max_value=10, value=8)
             st.session_state['hotel_score'] = hotel_score
 
         if pages.current == 10:
-            st.markdown("#### 13. 숙소의 등급(성급)을 선택해주세요")
+            st.markdown(f"#### 11. 숙소의 등급(성급)을 선택해주세요 ")
             hotel_grade = survey.radio('등급', options=sorted(hotel['등급'].drop_duplicates().tolist()), index=2, label_visibility="collapsed", horizontal=True)
             st.session_state['hotel_grade'] = hotel_grade
           
         if pages.current == 11:
-            st.markdown("#### 12. 공항에서 호텔과의 거리를 선택해주세요")
+            st.markdown(f"#### 12. 공항에서 호텔과의 거리를 선택해주세요 ")
             hotel_far=survey.number_input("숙소까지의 시간(분단위) 0 ~ 60", min_value=1, max_value=60, value=20,step=1)
             st.session_state['hotel_far'] = hotel_far
             
@@ -289,20 +287,19 @@ with st.expander(" ", expanded=True):
 
 # # # 렌트카 :: 지역	공항	이름	대여일	반납일	크기	제한인원수	보험	가격	브랜드
         if pages.current == 12:
-           st.write('#### 13. 다음의 질문은 렌트카에 대한 질문입니다.')
-           car_use=survey.radio('#### 13. 렌트카 사용 여부를 선택해주세요', options=["이용함", "하지 않음"], index=0, label_visibility="collapsed", horizontal=True )
-           st.session_state['car_use'] = car_use
+           st.write('#### 다음의 질문은 렌트카에 대한 질문입니다.')
            
-           if st.session_state.get('car_use') == '이용함' :
-                st.markdown("#### 14. 렌탈 기간은 어떻게 되시나요?")
+           
+        if pages.current == 13:
+                st.markdown(f"#### 13. 렌탈 기간은 어떻게 되시나요?  ")
                 car_st = survey.dateinput('픽업날짜')
                 car_end = survey.dateinput('반납날짜')
-                st.markdown("##### 렌탈 기간")
+
 
                 car_days = None  # Initialize car_days to None
 
                 if car_st == car_end:
-                    st.markdown("##### 날짜를 선택해주세요")
+                    st.markdown(f"##### 날짜를 선택해주세요  ")
                 else:
                     car_st_date = datetime.strptime(str(car_st)[0:10], '%Y-%m-%d').date()
                     car_end_date = datetime.strptime(str(car_end)[0:10], '%Y-%m-%d').date()
@@ -311,15 +308,15 @@ with st.expander(" ", expanded=True):
                         car_days = (car_end_date - car_st_date).days
 
                 if car_days is not None:
-                    st.markdown("##### {}일".format(str(car_days)))
+                    st.markdown("##### 렌탈 기간 : {}일".format(str(car_days)))
 
                 st.session_state['car_st'] = car_st
                 st.session_state['car_end'] = car_end
                 st.session_state['car_days'] = car_days
                 
                 
-        if pages.current == 13:
-            st.write('#### 15. 원하는 차종을 선택해주세요')
+        if pages.current == 14:
+            st.write(f'#### 14. 원하는 차종을 선택해주세요  ')
             car_capacity = survey.radio('차종', options=car['크기'].drop_duplicates().tolist(), index=0,label_visibility="collapsed", horizontal=True)
             st.session_state['car_capacity'] = car_capacity
             
@@ -328,7 +325,7 @@ with st.expander(" ", expanded=True):
                 # Convert '제한인원수' column to integers and filter the cars with a maximum passenger capacity
                 filtered_cars = car[car['크기'] == car_capacity]
                 car_size_list = filtered_cars['브랜드'].drop_duplicates().tolist()
-                st.write('#### 15. 원하는 브랜드를 선택해주세요')
+                st.write(f'#### 15. 원하는 브랜드를 선택해주세요  ')
                 car_brand = survey.radio('자동차 브랜드', options=car_size_list, label_visibility="collapsed", horizontal=True)
                 st.session_state['car_brand'] = car_brand
                 
@@ -338,7 +335,7 @@ with st.expander(" ", expanded=True):
                 st.session_state['car_name_list'] = car_name_list
                 
                 
-                st.markdown("#### 16. 보험은 어떤 걸로 할까요?")
+                st.markdown(f"#### 16. 보험은 어떤 걸로 할까요?  ")
                 insurance=survey.radio('보험 종류',
                             options=car['보험'].drop_duplicates().tolist(), index=0, label_visibility="collapsed", horizontal=True
                         )

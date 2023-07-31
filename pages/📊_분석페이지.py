@@ -27,7 +27,7 @@ add_vertical_space()
 add_vertical_space()
 
 air = pd.read_csv("data2/air_original_k2j.csv",encoding='CP949')
-hotel = pd.read_csv("data2/hotel_total_final.csv",encoding='CP949')
+hotel = pd.read_csv("data2/hotel_total_final.csv")
 car = pd.read_csv("data2/car_total.csv")
 
 
@@ -151,11 +151,7 @@ with st.sidebar:
             st.markdown("#### 1. 몇 명이서 여행을 가시나요?")
             user_count = st.number_input( '인원 수', min_value=1, max_value=10, value=int(st.session_state.get('user_count')))
             
-            col1, col2 = st.columns([0.5,0.5])
-            with col1:
-              adult = st.number_input("성인", min_value=0, max_value=30, value=st.session_state.get('adult'))
-            with col2:
-              kid = st.number_input("유아", min_value=0, max_value=30, value=st.session_state.get('kid'))
+
 
     # 2. 누구와 함께 가시나요?(객관식)
     # ⇒ 1) 가족 2) 연인 3) 친구 등
@@ -190,7 +186,7 @@ with st.sidebar:
     # # - 항공권 질문
     # # 4. 일본 어디로 가시나요?
     # # ⇒ 1) 도쿄 2) 오사카 3) 삿포로 4) 오키나와 5) 후쿠오카
-            st.markdown("#### 5. 일본 어디로 가시나요?")
+            st.markdown("#### 4. 일본 어디로 가시나요?")
             det =st.radio(
                 'det',   options=list(city_to_airport_code_jp.keys()), 
                 index={option: index for index, option in enumerate(list(city_to_airport_code_jp.keys()))}.get(st.session_state.get('det'), -1), 
@@ -202,7 +198,7 @@ with st.sidebar:
     # # 6. 어디에서 출발하시나요?
     # #  1) 인천공항 2) 청주공항 3) 광주공항 4) 대구공항 5)김해공항
 
-            st.markdown("#### 6. 어디 공항에서 출발하시나요?")
+            st.markdown("#### 5. 어디 공항에서 출발하시나요?")
             arr =st.radio(
                 'arr',    options=list(city_to_airport_code_kr.keys()), 
                 index={option: index for index, option in enumerate(list(city_to_airport_code_kr.keys()))}.get(st.session_state.get('arr'), -1), label_visibility="collapsed", 
@@ -213,7 +209,7 @@ with st.sidebar:
     # # 7. 항공편에 선호하는 좌석 등급이 있나요?(상관없음을 빼고 복수선택 가능을 해도 괜찮을 듯)
     # # ⇒ 1) 상관 없음 2) 이코노미 3)프리미엄 이코노미 4) 비즈니스 5)퍼스트
             
-            st.markdown("#### 7. 항공편에 선호하는 좌석 등급이 있나요?")
+            st.markdown("#### 6. 항공편에 선호하는 좌석 등급이 있나요?")
             filtered_air = air[(air['Arr'] == str(st.session_state.get('arr_i'))) & (air['Det'] == str(st.session_state.get('det_i')))]
             air_cls =st.radio(
                 'air_cls',  options=filtered_air['grade'].drop_duplicates().tolist(), 
@@ -224,7 +220,7 @@ with st.sidebar:
             st.session_state['air_cls'] = air_cls
 
     # # 8. 경유를 해도 괜찮나요? 
-            st.markdown("#### 8. 경유를 해도 괜찮나요?")
+            st.markdown("#### 7. 경유를 해도 괜찮나요?")
             filtered_air = air[(air['Arr'] == str(st.session_state.get('arr_i'))) & (air['Det'] == str(st.session_state.get('det_i'))) & 
                                 (air['grade'] == str(st.session_state.get('air_cls'))) ]
 
@@ -241,7 +237,7 @@ with st.sidebar:
                 st.write('직항, 경유 조건이 선택되지 않으면 정확한 예측이 어렵습니다. 옵션을 조정해보세요')
                 
                 
-                                
+            st.markdown(f"#### 8. 항공권 시간을 선택해주세요 ")      
             st.write('#### 일본행 항공권 시간을 선택해주세요')
             col1, col2 = st.columns([0.5,0.5])
             with col1:
@@ -266,18 +262,18 @@ with st.sidebar:
            
     with st.expander("숙박"),st.form("숙박"):
             st.markdown("### 숙박")
-            st.markdown("#### 11. 어떤 숙박 유형을 찾을까요?")
+            st.markdown("#### 9. 어떤 숙박 유형을 찾을까요?")
             hot_category=st.radio('hot_category',
                         options=list(category_mapping.keys()), 
                         index={option: index for index, option in enumerate(list(category_mapping.keys()))}.get(st.session_state.get('hot_category'), -1), 
                         label_visibility="collapsed", horizontal=True
                         )
             
-            st.markdown("#### 12. 숙소의 평점을 선택해주세요")
+            st.markdown("#### 10. 숙소의 평점을 선택해주세요")
             hotel_score = st.slider("평점 0.0 ~ 10.0", min_value=1, max_value=10, value = st.session_state.get('hotel_score') )
             
             
-            st.markdown("#### 13. 숙소의 등급(성급)을 선택해주세요")
+            st.markdown("#### 11. 숙소의 등급(성급)을 선택해주세요")
             hotel_grade = st.radio('등급', options=sorted(hotel['등급'].drop_duplicates().tolist()), 
                                    index={option: index for index, option in enumerate(sorted(hotel['등급'].drop_duplicates().tolist()))}.get(st.session_state.get('hotel_grade'), -1), 
                                    label_visibility="collapsed", horizontal=True)
@@ -299,12 +295,8 @@ with st.sidebar:
             
     with st.expander("렌트카"),st.form("렌트카"):
             st.markdown("### 렌트카")
-            
-            car_use=st.radio('#### 13. 렌트카 사용 여부를 선택해주세요', options=["이용함", "하지 않음"], 
-                             index={option: index for index, option in enumerate(["이용함", "하지 않음"])}.get(st.session_state.get('car_use'), -1), 
-                             label_visibility="visible", horizontal=True )
 
-            st.markdown("#### 14. 렌탈 기간은 어떻게 되시나요?")
+            st.markdown("#### 13. 렌탈 기간은 어떻게 되시나요?")
             car_st = st.date_input('픽업날짜',value=datetime.strptime(str(st.session_state.get('car_st')[0:10]), '%Y-%m-%d').date())
             car_end = st.date_input('반납날짜',value=datetime.strptime(str(st.session_state.get('car_end')[0:10]), '%Y-%m-%d').date())
             
@@ -318,7 +310,7 @@ with st.sidebar:
                 st.write('픽업 날짜가 반납 날짜와 같거나 먼저입니다')
                 
             
-            st.write('#### 15. 원하는 차종을 선택해주세요')
+            st.write('#### 14. 원하는 차종을 선택해주세요')
             car_capacity = st.radio('차종', options=car['크기'].drop_duplicates().tolist(), 
                                     index={option: index for index, option in enumerate(car['크기'].drop_duplicates().tolist())}.get(st.session_state.get('car_capacity'), -1),
                                     label_visibility="collapsed", horizontal=True)
@@ -411,24 +403,24 @@ if submitted_car :
 def won(number):
     return np.array2string(number, formatter={'all': lambda x: f'{x:,.0f}'}).replace('[', '').replace(']', '')
 
+
 add_vertical_space()
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-   st.header(""":blue[항공권]
-              {}원 """.format(won(air_pre)))
-
+   st.header("""항공권
+              {}원/1인""".format(won(air_pre)))
 
 ## 편도 각각 구하기
 
 with col2:
    st.header("""숙박
-              {}원""".format(won(hot_pre)))
+              {}원/1박""".format(int(hot_pre[0])))
 
 with col3:
    st.header("""렌트카
-              {}원""".format(won(car_pre)))
+              {}원/1일""".format(int(car_pre[0])))
    
 
 
@@ -445,18 +437,10 @@ add_vertical_space()
 
 
 
+
 row3_space1, row3_1, row3_space2, row3_2, row3_space3 = st.columns(
     (0.1, 1, 0.1, 1, 0.1)
 )
-
-airport_to_name={'CTS': '삿포로',
-'FUK': '후쿠오카',
-'HND': '도쿄(하네다)',
-'KIX': '오사카(간사이)',
-'NRT': '도쿄(나리타)',
-'OKA': '오키나와'}
-
-
 
 
 with row3_1:
@@ -464,7 +448,7 @@ with row3_1:
     # Figure 생성
     fig = go.Figure()
     
-    # 선택한 일본행 출발 날짜, 항공 클래스  기준 일본 지역별 평균 price 계산
+# 선택한 일본행 출발 날짜, 항공 클래스  기준 일본 지역별 평균 price 계산
 # 2023-08-20
     filtered_air = air[(air['Arr'] == arr_i) & (air['Arr_date'] == air_st.strftime('%Y-%m-%d')) & 
                     (air['grade'] == air_cls)]
@@ -480,7 +464,7 @@ with row3_1:
 
     # 평균 가격에 따라 막대 그래프 생성
     x = average_prices['Det'].tolist()
-    colors = ['crimson' if i == airport_to_name[det_i] else 'lightslategray' for i in x]
+    colors = ['LightSalmon' if i == airport_to_name[det_i] else 'LightSkyBlue' for i in x]
 
     fig.add_trace(go.Bar(
     x=average_prices['Det'],
@@ -499,7 +483,7 @@ with row3_1:
     fig.add_annotation(
                 x=airport_to_name[det_i], # x 축 기준 주석 위치
                 y=air_pre[0], # y 축 기준 주석 위치
-                text=f"""내 항공권 <br>{won(air_pre)}원""",
+                text=f"""예측 결과 <br>{won(air_pre)}원""",
                 showarrow=True, # 화살표 표시 여부
                 font=dict( # 주석 폰트
                     {'family':'NanumSquareRoundR'},
@@ -510,7 +494,7 @@ with row3_1:
                 arrowhead=2, # 화살표 머리 크기
                 arrowsize=1, # 화살표 크기
                 arrowwidth=2, # 화살표 넓이
-                arrowcolor="#77CFD9", # 화살표 색상
+                arrowcolor="#F25D50", # 화살표 색상
                 ax=100, #박스 위치 가로
                 ay=50,# 박스 위치 세로
                 borderpad=10, # 주석칸 크기
@@ -545,16 +529,17 @@ with row3_2:
                     (air['grade'] == air_cls)]
 
     average_prices_date = filtered_air_date.groupby('Arr_date')['price'].mean().reset_index()
+    average_prices_date['price'] = average_prices_date['price'].apply(lambda x: '{:,}'.format(int(x)))
     
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=average_prices_date['Arr_date'], y=average_prices_date['price'], mode='lines+markers'))
+    fig.add_trace(go.Scatter(x=average_prices_date['Arr_date'], y=average_prices_date['price'], mode='lines+markers', marker_color='LightSkyBlue'))
     fig.update_layout(title="날짜별 항공권 가격", xaxis_title="날짜", yaxis_title="항공권 평균 가격")
     fig.update_xaxes(tickformat="%m-%d (%a)")
     
     fig.add_annotation(
                 x=air_st.strftime('%Y-%m-%d'), # x 축 기준 주석 위치
                 y=air_pre[0], # y 축 기준 주석 위치
-                text=f"""내 항공권 <br>{won(air_pre)}원""",
+                text=f"""예측 결과 <br>{won(air_pre)}원""",
                 showarrow=True, # 화살표 표시 여부
                 font=dict( # 주석 폰트
                     {'family':'NanumSquareRoundR'},
@@ -565,37 +550,37 @@ with row3_2:
                 arrowhead=2, # 화살표 머리 크기
                 arrowsize=1, # 화살표 크기
                 arrowwidth=2, # 화살표 넓이
-                arrowcolor="#77CFD9", # 화살표 색상
-                ax=-80, #박스 위치 가로
+                arrowcolor="#F25D50", # 화살표 색상
+                ax=100, #박스 위치 가로
                 ay=50,# 박스 위치 세로
                 borderpad=10, # 주석칸 크기
                 bgcolor="#F25D50", # 배경색
                 opacity=1, # 투명도
                 captureevents =True
     )
-    ## 출국 입국 가격??
-    fig.add_annotation(
-        x=air_end.strftime('%Y-%m-%d'), # x 축 기준 주석 위치
-        y=air_pre[0], # y 축 기준 주석 위치
-        text=f"""내 항공권 <br>{won(air_pre)}원""",
-        showarrow=True, # 화살표 표시 여부
-        font=dict( # 주석 폰트
-            {'family':'NanumSquareRoundR'},
-            size=12,
-            color="#ffffff"
-            ),
-        align="center", # 정렬
-        arrowhead=2, # 화살표 머리 크기
-        arrowsize=1, # 화살표 크기
-        arrowwidth=2, # 화살표 넓이
-        arrowcolor="#77CFD9", # 화살표 색상
-        ax=80, #박스 위치 가로
-        ay=-50,# 박스 위치 세로
-        borderpad=10, # 주석칸 크기
-        bgcolor="#F25D50", # 배경색
-        opacity=1, # 투명도
-        captureevents =True
-    )
+    # ## 출국 입국 가격??
+    # fig.add_annotation(
+    #     x=air_end.strftime('%Y-%m-%d'), # x 축 기준 주석 위치
+    #     y=air_pre[0], # y 축 기준 주석 위치
+    #     text=f"""내 항공권 <br>{won(air_pre)}원""",
+    #     showarrow=True, # 화살표 표시 여부
+    #     font=dict( # 주석 폰트
+    #         {'family':'NanumSquareRoundR'},
+    #         size=12,
+    #         color="#ffffff"
+    #         ),
+    #         align="center", # 정렬
+    #         arrowhead=2, # 화살표 머리 크기
+    #         arrowsize=1, # 화살표 크기
+    #         arrowwidth=2, # 화살표 넓이
+    #         arrowcolor="#F25D50", # 화살표 색상
+    #         ax=100, #박스 위치 가로
+    #         ay=50,# 박스 위치 세로
+    #         borderpad=10, # 주석칸 크기
+    #         bgcolor="#F25D50", # 배경색
+    #         opacity=1, # 투명도
+    #         captureevents =True
+    # )
     st.plotly_chart(fig, use_container_width=True)
 
 
@@ -630,10 +615,11 @@ with row4_1:
 
     average_prices_hotel = filtered_df_hotel.groupby('숙박유형')['가격'].mean().reset_index()
     average_prices_hotel.sort_values(by='가격', inplace =True)
+    average_prices_hotel['가격'] = average_prices_hotel['가격'].apply(lambda x: '{:,}'.format(int(x)))
 
     # plotly 그래프 그리기
     hotel_type=average_prices_hotel['숙박유형'].tolist()
-    colors = ['crimson' if i == hot_category else 'lightslategray' for i in hotel_type]
+    colors = ['LightSalmon' if i == hot_category else 'Lavender' for i in hotel_type]
     
 
     fig.add_trace(go.Bar(x=average_prices_hotel['숙박유형'], y=average_prices_hotel['가격'],
@@ -647,28 +633,26 @@ with row4_1:
     fig.add_annotation(
                 x=hot_category, # x 축 기준 주석 위치
                 y=hot_pre[0], # y 축 기준 주석 위치
-                text="<b>나의 선택</b>",
+                text=f"""예측 결과 <br>{won(air_pre)}원""",
                 showarrow=True, # 화살표 표시 여부
                 font=dict( # 주석 폰트
-                    size=10,
+                    size=12,
                     color="#ffffff"
                     ),
                 align="center", # 정렬
                 arrowhead=2, # 화살표 머리 크기
                 arrowsize=1, # 화살표 크기
                 arrowwidth=2, # 화살표 넓이
-                arrowcolor="#77CFD9", # 화살표 색상
-                ax=20, #박스 위치 가로
-                ay=-30,# 박스 위치 세로
-                bordercolor="#77CFD9", # 주석 테두리 색상
-                borderwidth=2, # 주석 테두리 크기
+                arrowcolor="#F25D50", # 화살표 색상
+                ax=100, #박스 위치 가로
+                ay=50,# 박스 위치 세로
                 borderpad=10, # 주석칸 크기
                 bgcolor="#F25D50", # 배경색
-                opacity=0.9 # 투명도
+                opacity=1, # 투명도
+                captureevents =True
     )
 
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
-    
     
     
 
@@ -680,41 +664,37 @@ with row4_2:
 
     average_prices_hotel = filtered_df_hotel.groupby('별점')['가격'].mean().reset_index()
     average_prices_hotel.sort_values(by='가격', inplace =True)
-    average_prices_hotel['가격'] = average_prices_hotel['가격'].apply(lambda x: '{:,}'.format(int(x)))
-    
+
     # plotly 그래프 그리기
-    hotel_type=average_prices_hotel['별점'].tolist()
-    colors = ['crimson' if i == hotel_score else 'lightslategray' for i in hotel_type]
+    hotel_type_score=average_prices_hotel['별점'].drop_duplicates().tolist()
+    colors = ['DarkOrange' if i == str(float(hotel_score)) else 'Lavender' for i in hotel_type_score]
 
     fig.add_trace(go.Bar(x=average_prices_hotel['별점'], y=average_prices_hotel['가격'],
-                        marker_color=colors,
-                        text=average_prices_hotel['가격'],
-                        textposition='outside'))
+                        marker_color=colors))
     fig.update_layout(title="다른 등급의 숙박 평균 가격",
-                    xaxis_title='등급',
+                    xaxis_title='평점',
                     yaxis_title='숙박 평균 가격')
 
     fig.add_annotation(
-                x=hotel_score, # x 축 기준 주석 위치
+                x=str(float(hotel_score)), # x 축 기준 주석 위치
                 y=hot_pre[0], # y 축 기준 주석 위치
-                text="<b>나의 선택</b>",
+                text=f"""예측 결과 <br>{won(hot_pre)}원""",
                 showarrow=True, # 화살표 표시 여부
                 font=dict( # 주석 폰트
-                    size=10,
+                    size=12,
                     color="#ffffff"
                     ),
                 align="center", # 정렬
                 arrowhead=2, # 화살표 머리 크기
                 arrowsize=1, # 화살표 크기
                 arrowwidth=2, # 화살표 넓이
-                arrowcolor="#77CFD9", # 화살표 색상
-                ax=20, #박스 위치 가로
-                ay=-30,# 박스 위치 세로
-                bordercolor="#77CFD9", # 주석 테두리 색상
-                borderwidth=2, # 주석 테두리 크기
+                arrowcolor="#F25D50", # 화살표 색상
+                ax=100, #박스 위치 가로
+                ay=50,# 박스 위치 세로
                 borderpad=10, # 주석칸 크기
                 bgcolor="#F25D50", # 배경색
-                opacity=0.9 # 투명도
+                opacity=1, # 투명도
+                captureevents =True
     )
 
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
@@ -725,7 +705,6 @@ add_vertical_space()
 add_vertical_space()
 
 
-
 row5_space1, row5_1, row5_space2, row5_2, row5_space5 = st.columns(
     (0.1, 1, 0.1, 1, 0.1)
 )
@@ -734,56 +713,53 @@ row5_space1, row5_1, row5_space2, row5_2, row5_space5 = st.columns(
 
 
 with row5_1:
-    filtered_df_car = car[(car['지역'] == airport_to_car_name[det_i] ) & (car['대여일'] == car_st.strftime('%Y%m%d'))]
-    if     len(filtered_df_car) != 0:
-        # Figure 생성
-        fig = go.Figure()
-        
-        # 특정 Arr, Arr_date, grade 기준 Det별 평균 price 계산
+    st.subheader("차종별 렌트카 가격")
+    # Figure 생성
+    fig = go.Figure()
+    
+    # 특정 Arr, Arr_date, grade 기준 Det별 평균 price 계산
 
-        filtered_df_car = car[(car['지역'] == airport_to_car_name[det_i] ) & (car['대여일'] == car_st.strftime('%Y%m%d'))]
+    filtered_df_car = car[(car['지역'] == airport_to_car_name[det_i] ) ]
 
-        average_prices_car = filtered_df_car.groupby('크기')['가격'].mean().reset_index()
-        average_prices_car.sort_values(by='가격',inplace=True)
+    average_prices_car = filtered_df_car.groupby('크기')['가격'].mean().reset_index()
+    average_prices_car.sort_values(by='가격',inplace=True)
+    average_prices_car['가격'] = average_prices_car['가격'].apply(lambda x: '{:,}'.format(int(x)))
 
-        # plotly 그래프 그리기
-        car_type=average_prices_car['크기'].drop_duplicates().tolist()
-        colors = ['crimson' if i == car_capacity else 'lightslategray' for i in car_type]
+    # plotly 그래프 그리기
+    car_type=average_prices_car['크기'].drop_duplicates().tolist()
+    colors = ['LightSalmon' if i == car_capacity else 'LightGreen' for i in car_type]
 
-        fig.add_trace(go.Bar(x=average_prices_car['크기'], y=average_prices_car['가격'],
-                            marker_color=colors,
-                            text=average_prices_car['가격'],
-                            textposition='auto'))
-        fig.update_layout(title="차종별 렌트카 평균 가격",
-                        xaxis_title='차종',
-                        yaxis_title='렌트카 평균 가격')
+    fig.add_trace(go.Bar(x=average_prices_car['크기'], y=average_prices_car['가격'],
+                        marker_color=colors,
+                        text=average_prices_car['가격'],
+                        textposition='outside'))
+    fig.update_layout(title="차종별 렌트카 평균 가격",
+                    xaxis_title='차종',
+                    yaxis_title='렌트카 평균 가격')
 
-        fig.add_annotation(
-                    x=car_capacity, # x 축 기준 주석 위치s
-                    y=air_pre[0], # y 축 기준 주석 위치
-                    text="<b>나의 선택</b>",
-                    showarrow=True, # 화살표 표시 여부
-                    font=dict( # 주석 폰트
-                        size=10,
-                        color="#ffffff"
-                        ),
-                    align="center", # 정렬
-                    arrowhead=2, # 화살표 머리 크기
-                    arrowsize=1, # 화살표 크기
-                    arrowwidth=2, # 화살표 넓이
-                    arrowcolor="#77CFD9", # 화살표 색상
-                    ax=20, #박스 위치 가로
-                    ay=-30,# 박스 위치 세로
-                    bordercolor="#77CFD9", # 주석 테두리 색상
-                    borderwidth=2, # 주석 테두리 크기
-                    borderpad=10, # 주석칸 크기
-                    bgcolor="#F25D50", # 배경색
-                    opacity=0.9 # 투명도
-        )
+    fig.add_annotation(
+                x=car_capacity, # x 축 기준 주석 위치s
+                y=car_pre[0], # y 축 기준 주석 위치
+                text=f"""예측 결과 <br>{won(car_pre)}원""",
+                showarrow=True, # 화살표 표시 여부
+                font=dict( # 주석 폰트
+                    size=12,
+                    color="#ffffff"
+                    ),
+                align="center", # 정렬
+                arrowhead=2, # 화살표 머리 크기
+                arrowsize=1, # 화살표 크기
+                arrowwidth=2, # 화살표 넓이
+                arrowcolor="#F25D50", # 화살표 색상
+                ax=100, #박스 위치 가로
+                ay=50,# 박스 위치 세로
+                borderpad=10, # 주석칸 크기
+                bgcolor="#F25D50", # 배경색
+                opacity=1, # 투명도
+                captureevents =True
+    )
 
-        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
-    else :
-        st.write('죄송합니다. 비교할 데이터가 없습니다.')
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
     
     
     
@@ -799,30 +775,29 @@ with row5_2:
     average_prices_date = filtered_df_date.groupby('대여일')['가격'].mean().reset_index()
     
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=average_prices_date['대여일'], y=average_prices_date['가격'], mode='lines+markers'))
+    fig.add_trace(go.Scatter(x=average_prices_date['대여일'], y=average_prices_date['가격'], mode='lines+markers',marker_color='LightGreen') )
     fig.update_layout(title="날짜별 렌트카 가격", xaxis_title="날짜", yaxis_title="렌트카 평균 가격")
     fig.update_xaxes(tickformat="%m-%d (%a)")
     fig.add_annotation(
             x=car_st.strftime('%Y-%m-%d'), # x 축 기준 주석 위치
             y=car_pre[0], # y 축 기준 주석 위치
-            text="나의 선택",
+            text=f"""예측 결과 <br>{won(car_pre)}원""",
             showarrow=True, # 화살표 표시 여부
             font=dict( # 주석 폰트
-                size=10,
+                size=12,
                 color="#ffffff"
                 ),
-            align="center", # 정렬
-            arrowhead=2, # 화살표 머리 크기
-            arrowsize=1, # 화살표 크기
-            arrowwidth=2, # 화살표 넓이
-            arrowcolor="#77CFD9", # 화살표 색상
-            ax=20, #박스 위치 가로
-            ay=-30,# 박스 위치 세로
-            bordercolor="#77CFD9", # 주석 테두리 색상
-            borderwidth=2, # 주석 테두리 크기
-            borderpad=10, # 주석칸 크기
-            bgcolor="#F25D50", # 배경색
-            opacity=0.9 # 투명도
-        )
+                align="center", # 정렬
+                arrowhead=2, # 화살표 머리 크기
+                arrowsize=1, # 화살표 크기
+                arrowwidth=2, # 화살표 넓이
+                arrowcolor="#F25D50", # 화살표 색상
+                ax=100, #박스 위치 가로
+                ay=50,# 박스 위치 세로
+                borderpad=10, # 주석칸 크기
+                bgcolor="#F25D50", # 배경색
+                opacity=1, # 투명도
+                captureevents =True
+    )
 
     st.plotly_chart(fig, use_container_width=True)
